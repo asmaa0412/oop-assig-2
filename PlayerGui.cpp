@@ -2,14 +2,12 @@
 
 PlayerGui::PlayerGui()
 {
-    // Add buttons
     for (auto* btn : { &loadButton, &playButton , &stopButton})
     {
         addAndMakeVisible(*btn);
         btn->addListener(this);
     }
 
-    // Volume slider
     volumeSlider.setRange(0.0, 1.0, 0.01);
     volumeSlider.setValue(0.5);
     volumeSlider.addListener(this);
@@ -78,4 +76,5 @@ void PlayerGui::sliderValueChanged(juce::Slider* slider)
 {
     if (slider == &volumeSlider)
         playerAudio.setGain((float)volumeSlider.getValue());
+
 }
