@@ -2,12 +2,14 @@
 
 PlayerGui::PlayerGui()
 {
-    for (auto* btn : { &loadButton, &playButton , &stopButton})
+    // Add buttons
+    for (auto* btn : { &loadButton, &playButton , &stopButton ,&loopButton })
     {
         addAndMakeVisible(*btn);
         btn->addListener(this);
     }
 
+    // Volume slider
     volumeSlider.setRange(0.0, 1.0, 0.01);
     volumeSlider.setValue(0.5);
     volumeSlider.addListener(this);
@@ -37,6 +39,7 @@ void PlayerGui::resized()
     loadButton.setBounds(10, y, 80, 30);
     playButton.setBounds(100, y, 80, 30);
     stopButton.setBounds(190, y, 80, 30);
+    loopButton.setBounds(280, y, 80, 30); // task 4
     volumeSlider.setBounds(10, 60, getWidth() - 20, 30);
 
 }
@@ -69,6 +72,14 @@ void PlayerGui::buttonClicked(juce::Button* button)
     {
         playerAudio.stop();
     }
+    else if (button == &loopButton)
+    {
+        bool newLoopState = !playerAudio.getIsLooping();
+        playerAudio.setLooping(newLoopState);
+        loopButton.setButtonText(newLoopState ? "Un-Loop" : "Loop");
+    }
+
+
 
 }
 
@@ -76,5 +87,4 @@ void PlayerGui::sliderValueChanged(juce::Slider* slider)
 {
     if (slider == &volumeSlider)
         playerAudio.setGain((float)volumeSlider.getValue());
-
 }
