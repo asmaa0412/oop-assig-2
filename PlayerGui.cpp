@@ -39,7 +39,8 @@ void PlayerGui::resized()
     loadButton.setBounds(10, y, 80, 30);
     playButton.setBounds(100, y, 80, 30);
     stopButton.setBounds(190, y, 80, 30);
-    loopButton.setBounds(280, y, 80, 30); // task 4
+    muteButton.setBounds(280, y, 80, 40);
+    loopButton.setBounds(370, y, 80, 30); // task 4
     volumeSlider.setBounds(10, 60, getWidth() - 20, 30);
 
 }
@@ -72,6 +73,18 @@ void PlayerGui::buttonClicked(juce::Button* button)
     {
         playerAudio.stop();
     }
+        else if (button == &muteButton) {
+		isMuted = !isMuted;
+        if (isMuted) {
+		playerAudio.setGain(0.0f);
+        muteButton.setButtonText("Unmute");
+        }
+        else {
+			playerAudio.setGain((float)volumeSlider.getValue());
+			muteButton.setButtonText("Mute");
+        }
+
+    }
     else if (button == &loopButton)
     {
         bool newLoopState = !playerAudio.getIsLooping();
@@ -88,3 +101,4 @@ void PlayerGui::sliderValueChanged(juce::Slider* slider)
     if (slider == &volumeSlider)
         playerAudio.setGain((float)volumeSlider.getValue());
 }
+
