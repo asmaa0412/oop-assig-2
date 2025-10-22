@@ -22,6 +22,7 @@ class PlayerGui : public juce::Component,
     juce::TextButton loadButton { "Load" };
     juce::TextButton playButton { "play" };
     juce::TextButton stopButton { "stop" };
+    juce::TextButton muteButton{ "Mute" };
     juce::TextButton loopButton { "Loop" };  //task 4
     juce::Slider volumeSlider;
 
@@ -36,3 +37,4 @@ class PlayerGui : public juce::Component,
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGui)
     };
+
