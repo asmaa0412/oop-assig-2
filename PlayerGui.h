@@ -29,6 +29,7 @@ class PlayerGui : public juce::Component,
 
 
     std::unique_ptr<juce::FileChooser>filechooser;
+    bool isMuted =false ;
 
     //events handlers
 
@@ -37,4 +38,5 @@ class PlayerGui : public juce::Component,
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGui)
     };
+
 
