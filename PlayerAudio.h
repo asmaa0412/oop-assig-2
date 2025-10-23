@@ -2,7 +2,7 @@
 
 class PlayerAudio {
 
-  public:
+public:
     PlayerAudio();
     ~PlayerAudio();
 
@@ -17,18 +17,19 @@ class PlayerAudio {
     void setPosition(double pos);
     double getPosition() const;
     double getLength() const;
-
     void setLooping(bool shouldLoop);
     bool getIsLooping() const;
+    bool isPlaying() const { return transportSource.isPlaying(); }
+   
 
 
 
 
 
-  private:
+private:
     juce::AudioFormatManager formatManager;
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
     juce::AudioTransportSource transportSource;
     bool looping = false;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerAudio)
-  };
+};
