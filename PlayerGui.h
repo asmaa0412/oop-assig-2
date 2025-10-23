@@ -3,10 +3,10 @@
 #include "PlayerAudio.h"
 
 class PlayerGui : public juce::Component,
-                  public juce::Button::Listener,
-                  public juce::Slider::Listener
+    public juce::Button::Listener,
+    public juce::Slider::Listener
 {
-  public:
+public:
     PlayerGui();
     ~PlayerGui() override;
 
@@ -16,20 +16,21 @@ class PlayerGui : public juce::Component,
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& buffer);
     void releaseResources();
 
-  private:
+private:
     PlayerAudio playerAudio;
     //Gui elements
-    juce::TextButton loadButton { "Load" };
-    juce::TextButton playButton { "play" };
-    juce::TextButton stopButton { "stop" };
+    juce::TextButton loadButton{ "Load" };
+    juce::TextButton playButton{ "play" };
+    juce::TextButton endButton{ "end" };
+	juce::TextButton pauseButton{ "Pause" };
     juce::TextButton muteButton{ "Mute" };
-    juce::TextButton loopButton { "Loop" };  //task 4
+    juce::TextButton loopButton{ "Loop" };  //task 4
     juce::Slider volumeSlider;
-
+    double savedPosition = 0.0;
 
 
     std::unique_ptr<juce::FileChooser>filechooser;
-    bool isMuted =false ;
+    bool isMuted = false;
 
     //events handlers
 
@@ -37,6 +38,5 @@ class PlayerGui : public juce::Component,
     void sliderValueChanged(juce::Slider* slider) override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGui)
-    };
-
+};
 
