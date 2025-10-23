@@ -21,8 +21,9 @@ private:
     //Gui elements
     juce::TextButton loadButton{ "Load" };
     juce::TextButton playButton{ "play" };
-    juce::TextButton endButton{ "end" };
+    juce::TextButton goToEndButton{ "end" };
 	juce::TextButton pauseButton{ "Pause" };
+	juce::TextButton goToStartbutton { "Restart"};
     juce::TextButton muteButton{ "Mute" };
     juce::TextButton loopButton{ "Loop" };  //task 4
     juce::Slider volumeSlider;
