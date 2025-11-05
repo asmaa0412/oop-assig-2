@@ -4,40 +4,47 @@
 
 class PlayerGui : public juce::Component,
     public juce::Button::Listener,
-    public juce::Slider::Listener
+    public juce::Slider::Listener,
+    public juce::ListBoxModel
 {
 public:
     PlayerGui();
     ~PlayerGui() override;
 
     void resized() override;
-
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate);
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& buffer);
     void releaseResources();
 
 private:
     PlayerAudio playerAudio;
-    //Gui elements
+
     juce::TextButton loadButton{ "Load" };
-    juce::TextButton playButton{ "play" };
-    juce::TextButton goToEndButton{ "end" };
-	juce::TextButton pauseButton{ "Pause" };
-	juce::TextButton goToStartbutton { "Restart"};
+    juce::TextButton playButton{ "Play" };
+    juce::TextButton pauseButton{ "Pause" };
+    juce::TextButton goToStartButton{ "Restart" };
+    juce::TextButton goToEndButton{ "End" };
     juce::TextButton muteButton{ "Mute" };
-    juce::TextButton loopButton{ "Loop" };  //task 4
+    juce::TextButton loopButton{ "Loop" };
+
     juce::Slider volumeSlider;
+    juce::Label metadataLabel;
+
+    juce::ListBox playlistBox{ "Playlist", this };
+    juce::Array<juce::File> playlistFiles;
+
+    std::unique_ptr<juce::FileChooser> fileChooser;
     double savedPosition = 0.0;
-
-
-    std::unique_ptr<juce::FileChooser>filechooser;
     bool isMuted = false;
-
-    //events handlers
 
     void buttonClicked(juce::Button* button) override;
     void sliderValueChanged(juce::Slider* slider) override;
 
+    int getNumRows() override;
+    void paintListBoxItem(int rowNumber, juce::Graphics& g, int width, int height, bool rowIsSelected) override;
+    void selectedRowsChanged(int lastRowSelected) override;
+
+    void updateMetadata(const juce::File& file);
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGui)
 };
-
