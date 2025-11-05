@@ -20,10 +20,6 @@ public:
     void setLooping(bool shouldLoop);
     bool getIsLooping() const;
     bool isPlaying() const { return transportSource.isPlaying(); }
-   
-
-
-
 
 
 private:
