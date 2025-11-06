@@ -13,6 +13,8 @@ public:
     void releaseResources() override;
     void resized() override;
 
+    void paint(juce::Graphics& g) override;
+
 private:
     PlayerGui playerGui;
 
