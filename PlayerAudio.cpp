@@ -36,33 +36,37 @@ bool PlayerAudio::loadFile(const juce::File& file) {
     return false;
 }
 
-void PlayerAudio::play() { 
-    transportSource.start(); 
+void PlayerAudio::play() {
+    transportSource.start();
 }
 
-void PlayerAudio::stop() { 
-    transportSource.stop(); 
-    transportSource.setPosition(0.0); 
+void PlayerAudio::stop() {
+    transportSource.stop();
+    transportSource.setPosition(0.0);
 }
 
-void PlayerAudio::setGain(float gain) { 
-    transportSource.setGain(gain); 
+void PlayerAudio::stopWithoutReset() {
+    transportSource.stop();
 }
 
-void PlayerAudio::setSpeed(double newSpeed) { 
-    resampleSource.setResamplingRatio(newSpeed); 
+void PlayerAudio::setGain(float gain) {
+    transportSource.setGain(gain);
 }
 
-void PlayerAudio::setPosition(double pos) { 
-    transportSource.setPosition(pos); 
+void PlayerAudio::setSpeed(double newSpeed) {
+    resampleSource.setResamplingRatio(newSpeed);
 }
 
-double PlayerAudio::getPosition() const { 
-    return transportSource.getCurrentPosition(); 
+void PlayerAudio::setPosition(double pos) {
+    transportSource.setPosition(pos);
 }
 
-double PlayerAudio::getLength() const { 
-    return transportSource.getLengthInSeconds(); 
+double PlayerAudio::getPosition() const {
+    return transportSource.getCurrentPosition();
+}
+
+double PlayerAudio::getLength() const {
+    return transportSource.getLengthInSeconds();
 }
 
 void PlayerAudio::setLooping(bool shouldLoop) {
