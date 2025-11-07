@@ -51,6 +51,10 @@ private:
     bool isMuted = false;
     bool fileLoaded = false;
     float lastVolume = 0.7f;
+    bool isProgressBarDragging = false;
+
+    bool isPaused = false;
+    double pausePosition = 0.0;
 
     double loopStart = 0.0;
     double loopEnd = 0.0;
@@ -70,6 +74,8 @@ private:
 
     void buttonClicked(juce::Button* button) override;
     void sliderValueChanged(juce::Slider* slider) override;
+    void sliderDragStarted(juce::Slider* slider) override;
+    void sliderDragEnded(juce::Slider* slider) override;
     void timerCallback() override;
 
     int getNumRows() override;
