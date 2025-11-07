@@ -18,6 +18,7 @@ PlayerGui::PlayerGui() {
     progressBar.setColour(juce::Slider::thumbColourId, accentColor);
     progressBar.setColour(juce::Slider::trackColourId, primaryColor);
     progressBar.setColour(juce::Slider::backgroundColourId, bgColor.brighter(0.1f));
+    progressBar.addListener(this);
 
     addAndMakeVisible(progressLabel);
     progressLabel.setJustificationType(juce::Justification::centred);
@@ -148,8 +149,8 @@ void PlayerGui::resized() {
     area.removeFromTop(10);
     metadataLabel.setBounds(area.removeFromTop(25).reduced(10, 5));
 
-    auto progressArea = area.removeFromTop(50).reduced(10, 5);
-    progressBar.setBounds(progressArea.removeFromTop(20));
+    auto progressArea = area.removeFromTop(60).reduced(10, 5);
+    progressBar.setBounds(progressArea.removeFromTop(25));
     progressLabel.setBounds(progressArea.removeFromTop(25));
 
     area.removeFromTop(5);
@@ -229,19 +230,42 @@ void PlayerGui::buttonClicked(juce::Button* button) {
     else if (button == &playButton) {
         if (fileLoaded) {
             playerAudio.play();
+            isPaused = false;
+            pauseButton.setButtonText("Pause");
         }
     }
     else if (button == &pauseButton) {
-        playerAudio.stop();
+        if (fileLoaded) {
+            if (!isPaused) {
+                pausePosition = playerAudio.getPosition();
+                playerAudio.stop();
+                isPaused = true;
+                pauseButton.setButtonText("Resume");
+            }
+            else {
+                // الاستئناف - العودة إلى الموضع المحفوظ
+                playerAudio.setPosition(pausePosition);
+                playerAudio.play();
+                isPaused = false;
+                pauseButton.setButtonText("Pause");
+            }
+        }
     }
     else if (button == &restartButton) {
         if (fileLoaded) {
             playerAudio.setPosition(0.0);
+            if (isPaused) {
+                isPaused = false;
+                pauseButton.setButtonText("Pause");
+            }
         }
     }
     else if (button == &goToEndButton) {
         if (fileLoaded) {
             playerAudio.setPosition(playerAudio.getLength());
+            if (isPaused) {
+                pausePosition = playerAudio.getLength();
+            }
         }
     }
     else if (button == &muteButton) {
@@ -307,6 +331,35 @@ void PlayerGui::sliderValueChanged(juce::Slider* slider) {
             playerAudio.setPosition(newPosition);
         }
     }
+    else if (slider == &progressBar) {
+        if (fileLoaded && playerAudio.getLength() > 0.0) {
+            double newPosition = progressBar.getValue() * playerAudio.getLength();
+            playerAudio.setPosition(newPosition);
+
+            double currentPos = playerAudio.getPosition();
+            double totalLength = playerAudio.getLength();
+            progressLabel.setText(
+                formatTime(currentPos) + " / " + formatTime(totalLength),
+                juce::dontSendNotification
+            );
+            timeDisplayLabel.setText(
+                formatTime(currentPos) + " / " + formatTime(totalLength),
+                juce::dontSendNotification
+            );
+        }
+    }
+}
+
+void PlayerGui::sliderDragStarted(juce::Slider* slider) {
+    if (slider == &progressBar) {
+        isProgressBarDragging = true;
+    }
+}
+
+void PlayerGui::sliderDragEnded(juce::Slider* slider) {
+    if (slider == &progressBar) {
+        isProgressBarDragging = false;
+    }
 }
 
 void PlayerGui::timerCallback() {
@@ -316,17 +369,14 @@ void PlayerGui::timerCallback() {
 
         if (totalLength > 0.0) {
             positionSlider.setValue(currentPos / totalLength, juce::dontSendNotification);
-            progressBar.setValue(currentPos / totalLength, juce::dontSendNotification);
 
-            progressLabel.setText(
-                formatTime(currentPos) + " / " + formatTime(totalLength),
-                juce::dontSendNotification
-            );
+            if (!isProgressBarDragging) {
+                progressBar.setValue(currentPos / totalLength, juce::dontSendNotification);
+            }
 
-            timeDisplayLabel.setText(
-                formatTime(currentPos) + " / " + formatTime(totalLength),
-                juce::dontSendNotification
-            );
+            juce::String timeText = formatTime(currentPos) + " / " + formatTime(totalLength);
+            progressLabel.setText(timeText, juce::dontSendNotification);
+            timeDisplayLabel.setText(timeText, juce::dontSendNotification);
         }
 
         if (isLoopSegmentSet && isLoopingSegment && loopEnd > loopStart) {
@@ -336,13 +386,16 @@ void PlayerGui::timerCallback() {
         }
     }
     else {
-        timeDisplayLabel.setText("00:00 / 00:00", juce::dontSendNotification);
-        progressBar.setValue(0.0, juce::dontSendNotification);
-        progressLabel.setText("00:00 / 00:00", juce::dontSendNotification);
+        juce::String defaultTime = "00:00 / 00:00";
+        timeDisplayLabel.setText(defaultTime, juce::dontSendNotification);
+        if (!isProgressBarDragging) {
+            progressBar.setValue(0.0, juce::dontSendNotification);
+        }
+        progressLabel.setText(defaultTime, juce::dontSendNotification);
     }
 
-    playButton.setEnabled(fileLoaded && !playerAudio.isPlaying());
-    pauseButton.setEnabled(fileLoaded && playerAudio.isPlaying());
+    playButton.setEnabled(fileLoaded && !playerAudio.isPlaying() && !isPaused);
+    pauseButton.setEnabled(fileLoaded && (playerAudio.isPlaying() || isPaused));
     restartButton.setEnabled(fileLoaded);
     goToEndButton.setEnabled(fileLoaded);
     muteButton.setEnabled(fileLoaded);
@@ -417,6 +470,10 @@ void PlayerGui::loadFileIntoPlayer(const juce::File& file) {
 
         playerAudio.setGain((float)volumeSlider.getValue());
         playerAudio.setSpeed(speedSlider.getValue());
+
+        isPaused = false;
+        pausePosition = 0.0;
+        pauseButton.setButtonText("Pause");
 
         loopStart = 0.0;
         loopEnd = 0.0;
